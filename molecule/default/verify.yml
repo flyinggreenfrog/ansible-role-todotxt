@@ -1,0 +1,11 @@
+---
+- name: 'Verify'
+  hosts: 'all'
+  become: true
+  tasks:
+    - name: 'include default role variables'
+      # ansible-lint: [E505] referenced missing file in
+      include_vars: '../../defaults/main.yml'  # noqa 505
+
+    - name: 'include OS family specific role variables'
+      include_vars: '../../vars/{{ ansible_os_family }}.yml'

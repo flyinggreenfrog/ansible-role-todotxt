@@ -1,0 +1,20 @@
+---
+- name: 'check zshrc.d/'
+  stat:
+    path: '{{ item.home }}/.zshrc.d'
+  register: todotxt__zshrcd_r
+  loop: '{{ todotxt__users }}'
+  loop_control:
+    label: '{{ item.home }}/.zshrc.d'
+
+- name: 'zshrc - ensure configured'
+  template:
+    dest: '{{ item.invocation.module_args.path }}/todotxt.zshrc'
+    src: 'todotxt.zshrc.j2'
+    owner: '{{ item.item.user }}'
+    group: '{{ item.item.group }}'
+    mode: '0400'
+  when: item.stat.exists
+  loop: '{{ todotxt__zshrcd_r.results }}'
+  loop_control:
+    label: '{{ item.invocation.module_args.path }}/todotxt.zshrc'

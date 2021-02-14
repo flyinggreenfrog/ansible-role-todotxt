@@ -1,0 +1,19 @@
+---
+- name: 'zypper repositories - ensure configured'
+  zypper_repository:
+    name: 'home_flyinggreenfrog'
+    description: 'home:flyinggreenfrog (openSUSE_Leap_{{ item }})'
+    state: '{{ todotxt__repositories_state }}'
+    enabled: '{{ todotxt__repositories_enabled }}'
+    repo: "http://download.opensuse.org/repositories/home:/flyinggreenfrog\
+      /openSUSE_Leap_{{ item }}"
+    auto_import_keys: true
+  loop_control:
+    label: "{{ item }} - ensure
+      {{ todotxt__repositories_state }} and
+      {{ todotxt__repositories_enabled | ternary('enabled', 'disabled') }}"
+  loop:
+    - '15.2'
+  when:
+    - ansible_distribution == 'openSUSE Leap'
+    - ansible_distribution_version == item

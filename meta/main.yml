@@ -1,0 +1,22 @@
+---
+# Copyright (C) 2021 Peter Hoffmann
+# SPDX-License-Identifier: GPL-3.0-only
+
+dependencies: []
+
+galaxy_info:
+  role_name: todotxt
+
+  author: Peter Hoffmann
+  description: Installs todotxt
+  license: GPL-3.0-only
+
+  min_ansible_version: 2.9
+
+  platforms:
+    - name: opensuse
+      versions:
+        - 15.2
+
+  galaxy_tags:
+    - todotxt

@@ -1,0 +1,85 @@
+{{ ansible_managed | comment }}
+
+compdef _todo.sh t
+
+### Functions
+
+currentdate () {
+  # date -I doesn't work on macOS -> use date "+%Y-%m-%d" instead
+  date "+%Y-%m-%d"
+}
+
+removelast2lines () {
+  # head -n -2 doesn't work on macOS,
+  # since head on macOS doesn't support negative numbers
+  sed '$d' | sed '$d'
+}
+
+### General
+
+# todotxt_default_action: {{ item.item.todotxt__default_action|d(todotxt__default_action) }}
+# e.g. todo.sh list -@someday
+alias tl='t list'
+alias ts='t list @someday'
+alias ti='t listpri'
+alias ta='ti A'
+alias tb='ti B'
+alias tc='ti C'
+alias tt='t listfile done.txt'
+td() { MYDATE=${1:-$(eval currentdate)};
+  t listfile done.txt "x ${MYDATE}" }
+
+### work
+
+alias tw='t list -@someday +work'
+alias twl='tl +work'
+alias tws='ts +work'
+alias twi='ti +work'
+alias twa='ta +work'
+alias twb='tb +work'
+alias twc='tc +work'
+twd() { MYDATE=${1:-$(eval currentdate)};
+  TODOTXT_SORT_COMMAND='env LC_COLLATE=C sort -f -k1' \
+  t -p listfile done.txt "x ${MYDATE}" +work | \
+  removelast2lines |
+  cut -d' ' -f5- | \
+  sed -e 's/[ \t]*+work//g' -e 's/@computer[ \t]*//g' -e 's/^/- /g' }
+
+### personal
+
+alias tp='t list -@someday +personal'
+alias tpl='tl +personal'
+alias tps='ts +personal'
+alias tpi='ti +personal'
+alias tpa='ta +personal'
+alias tpb='tb +personal'
+alias tpc='tc +personal'
+tpd() { MYDATE=${1:-$(eval currentdate)};
+  TODOTXT_SORT_COMMAND='env LC_COLLATE=C sort -f -k1' \
+  t -p listfile done.txt "x ${MYDATE}" +personal | \
+  removelast2lines |
+  cut -d' ' -f5- | \
+  sed -e 's/[ \t]*+personal//g' -e 's/@computer[ \t]*//g' -e 's/^/- /g' }
+
+### knowledge
+
+alias tk='t list -@someday +knowledge'
+alias tkl='tl +knowledge'
+alias tks='ts +knowledge'
+alias tki='ti +knowledge'
+alias tka='ta +knowledge'
+alias tkb='tb +knowledge'
+alias tkc='tc +knowledge'
+tkd() { MYDATE=${1:-$(date -I)};
+  TODOTXT_SORT_COMMAND='env LC_COLLATE=C sort -f -k1' \
+  t -p listfile done.txt "x ${MYDATE}" +knowledge | \
+  removelast2lines |
+  cut -d' ' -f5- | \
+  sed -e 's/[ \t]*+knowledge//g' -e 's/@computer[ \t]*//g' -e 's/^/- /g' }
+
+### Projects list
+
+alias tlp='t listfile projects.txt'
+alias tap='t addto projects.txt'
+tfp() { t mv $1 todo.txt projects.txt }
+ttp() { t mv $1 projects.txt todo.txt }

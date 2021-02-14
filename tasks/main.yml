@@ -1,0 +1,24 @@
+---
+- name: 'include OS family specific variables'
+  include_vars: '{{ ansible_os_family }}.yml'
+  tags: 'todotxt'
+
+- import_tasks: 'validate.yml'
+  tags: 'todotxt'
+
+- import_tasks: 'repositories.yml'
+  when: todotxt__repositories_manage
+  tags: 'todotxt'
+
+- import_tasks: 'packages.yml'
+  when: todotxt__packages_manage
+  tags: 'todotxt'
+
+- import_tasks: 'install.yml'
+  tags: 'todotxt'
+
+- import_tasks: 'config.yml'
+  tags: 'todotxt'
+
+- import_tasks: 'zsh.yml'
+  tags: 'todotxt'

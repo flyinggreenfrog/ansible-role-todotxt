@@ -1,0 +1,24 @@
+{{ ansible_managed | comment }}
+
+export TODO_DIR="{{ item.todotxt__dir|d(todotxt__dir) }}"
+
+export TODO_FILE="$TODO_DIR/todo.txt"
+export DONE_FILE="$TODO_DIR/done.txt"
+export REPORT_FILE="$TODO_DIR/report.txt"
+
+export TODOTXT_DEFAULT_ACTION='{{ item.todotxt__default_action|d(todotxt__default_action) }}'
+
+export TODOTXT_PRESERVE_LINE_NUMBERS=0
+export TODOTXT_DATE_ON_ADD=1
+export TODOTXT_AUTO_ARCHIVE=1
+
+export PRI_A=$LIGHT_RED
+export PRI_B=$YELLOW
+export PRI_C=$LIGHT_GREEN
+#export DEFAULT=$WHITE
+
+export COLOR_PROJECT=$BROWN
+export COLOR_CONTEXT=$CYAN
+
+### note
+export TODO_NOTE_EXT=.md

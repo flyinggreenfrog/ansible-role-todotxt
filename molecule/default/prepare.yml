@@ -1,0 +1,48 @@
+---
+- name: 'Prepare'
+  hosts: 'all'
+  become: true
+  vars:
+    ansible_python_interpreter: '/usr/bin/python'
+  tasks:
+    - name: 'needed packages - ensure installed'
+      package:
+        state: 'present'
+        name:
+          - 'python3'
+          - 'zsh'
+      when: ansible_os_family == 'Suse'
+
+    - name: 'zsh as default shell - ensure configured'
+      user:
+        name: '{{ item.user }}'
+        group: '{{ item.group }}'
+        shell: '/bin/zsh'
+      loop_control:
+        label: '{{ item.user }}'
+      loop: '{{ todotxt__users }}'
+
+    - name: '.zshrc.d/ - ensure created'
+      file:
+        dest: '{{ item.home }}/.zshrc.d'
+        state: 'directory'
+        owner: '{{ item.user }}'
+        group: '{{ item.group }}'
+        mode: 0700
+      loop_control:
+        label: '{{ item.home }}/.zshrc.d'
+      loop: '{{ todotxt__users }}'
+
+    - name: '.gitconfig - ensure created'
+      copy:
+        dest: '{{ item.home }}/.gitconfig'
+        content: |
+          [user]
+            name = {{ item.user }}
+            email = {{ item.user }}@example.org
+        owner: '{{ item.user }}'
+        group: '{{ item.group }}'
+        mode: 0400
+      loop_control:
+        label: '{{ item.home }}/.gitconfig'
+      loop: '{{ todotxt__users }}'

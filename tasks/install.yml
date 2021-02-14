@@ -1,0 +1,45 @@
+---
+- name: 'determine needed directories'
+  set_fact:
+    todotxt__needed_dirs: "{{ todotxt__components
+      | map(attribute='dest', default='.todo.actions.d')
+      | unique }}"
+
+- name: 'create needed directories'
+  file:
+    dest: '{{ item.0.home }}/{{ item.1 }}'
+    state: 'directory'
+    owner: '{{ item.0.user }}'
+    group: '{{ item.0.group }}'
+    mode: '0700'
+  loop_control:
+    label: '{{ item.0.home }}/{{ item.1 }}'
+  loop: "{{ todotxt__users | product(todotxt__needed_dirs) | list }}"
+
+- name: 'download/install components'
+  get_url:
+    dest: "{{ item.0.home }}/{{ item.1.dest|d('.todo.actions.d') }}/\
+      {{ item.1.name }}"
+    url: "https://github.com/{{ item.1.github.user }}/{{ item.1.github.repo }}/\
+      raw/{{ item.1.github.version }}/\
+      {% if item.1.github.location is defined %}{{ item.1.github.location }}\
+      {% else %}{{ item.1.name }}{% endif %}"
+    owner: '{{ item.0.user }}'
+    group: '{{ item.0.group }}'
+    mode: '0500'
+  loop_control:
+    label: "{{ item.0.home }}/{{ item.1.dest|d('.todo.actions.d') }}/\
+      {{ item.1.name }}"
+  loop: '{{ todotxt__users | product(todotxt__components) | list }}'
+  when: item.1.state|d('present') == 'present'
+
+- name: 'uninstall components'
+  file:
+    state: 'absent'
+    dest: "{{ item.0.home }}/{{ item.1.dest|d('.todo.actions.d') }}/\
+      {{ item.1.name }}"
+  loop_control:
+    label: "{{ item.0.home }}/{{ item.1.dest|d('.todo.actions.d') }}/\
+      {{ item.1.name }}"
+  loop: '{{ todotxt__users | product(todotxt__components) | list }}'
+  when: item.1.state|d('present') == 'absent'

@@ -1,0 +1,33 @@
+---
+- name: 'todo.cfg - ensure configured'
+  template:
+    dest: '{{ item.home }}/.todo.cfg'
+    src: 'todo.cfg.j2'
+    owner: '{{ item.user }}'
+    group: '{{ item.group }}'
+    mode: '0400'
+  loop_control:
+    label: '{{ item.home }}/.todo.cfg'
+  loop: '{{ todotxt__users }}'
+
+- name: 'todo.actions.d directory - ensure created'
+  file:
+    dest: '{{ item.home }}/.todo.actions.d'
+    state: 'directory'
+    owner: '{{ item.user }}'
+    group: '{{ item.group }}'
+    mode: '0700'
+  loop_control:
+    label: '{{ item.home }}/.todo.actions.d'
+  loop: '{{ todotxt__users }}'
+
+- name: 'add with priority scripts - ensure configured'
+  template:
+    dest: '{{ item.0.home }}/.todo.actions.d/a{{ item.1 }}'
+    src: 'addpriority.j2'
+    owner: '{{ item.0.user }}'
+    group: '{{ item.0.group }}'
+    mode: '0500'
+  loop_control:
+    label: '{{ item.0.home }}/.todo.actions.d/a{{ item.1 }}'
+  loop: "{{ todotxt__users | product(['a', 'b', 'c']) | list }}"

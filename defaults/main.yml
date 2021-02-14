@@ -1,0 +1,101 @@
+---
+todotxt__repositories_manage: true
+todotxt__repositories_state: 'present'
+todotxt__repositories_enabled: true
+todotxt__packages_manage: true
+todotxt__packages_state: 'present'
+#todotxt__users:
+#  - user: 'tux'
+#    group: 'users'
+#    home: '/home/tux'
+#    todotxt__dir: '/home/tux/Todos'
+#    todotxt__default_action: 'listpri'
+todotxt__dir: '$HOME/Todos'
+todotxt__default_action: 'listpri'
+todotxt__components:
+  - name: 'todo.sh'
+    dest: 'bin'
+    github:
+      user: 'todotxt'
+      repo: 'todo.txt-cli'
+      version: 'v2.12.0'
+  - name: 'edit'
+    github:
+      user: 'mbrubeck'
+      repo: 'todo.txt-cli'
+      location: 'todo.actions.d/edit'
+      version: '9a7a7cff6c4426f844cc2ac65c656a7b23e120d3'
+  - name: 'revive'
+    github:
+      user: 'flyinggreenfrog'
+      repo: 'todo.txt-revive'
+      version: '4916cb544da1e0b39664e0b915b42d5a6a8c9971'
+  - name: 'mit'
+    github:
+      user: 'codybuell'
+      repo: 'mit'
+      version: '0fa2787abe7626fcc998483cfa72029ee9ff078a'
+  - name: 'mitf'
+    github:
+      user: 'linduxed'
+      repo: 'todo.txt-mitf'
+      version: 'fc8a00cf21dd89128098c8dbd6a08856709e88ba'
+  - name: 'v'
+    github:
+      user: 'markwu'
+      repo: 'todo-cli-plugins'
+      version: '56a5c57c7e499026c94a18e802f0ceb75be23e74'
+      ignore_version: '1.0'
+      ignore_reason: 'use more recent commit'
+  - name: 'view'
+    github:
+      user: 'markwu'
+      repo: 'todo-cli-plugins'
+      version: '56a5c57c7e499026c94a18e802f0ceb75be23e74'
+      ignore_version: '1.0'
+      ignore_reason: 'use more recent commit'
+  - name: 'repeat'
+    github:
+      state: 'absent'
+      user: 'drobertadams'
+      repo: 'todo.txt-cli-addons'
+      location: 'repeat/repeat'
+      version: '80e94102a2134e50351105950d55b83d72743d50'
+  - name: 'due'
+    github:
+      user: 'rebecca-owen'
+      repo: 'due'
+      version: 'ace0855aae1c9687e0ebae94071a2f195a8e1281'
+  - name: 'due.py'
+    github:
+      user: 'rebecca-owen'
+      repo: 'due'
+      version: 'ace0855aae1c9687e0ebae94071a2f195a8e1281'
+  - name: 'graph'
+    dest: '.todo.actions.d/graph'
+    github:
+      user: 'timpulver'
+      repo: 'todo.txt-graph'
+      version: '07e5bca88f70f14d8df5c1cda04203245ae72815'
+  - name: 'graph.py'
+    dest: '.todo.actions.d/graph'
+    github:
+      user: 'timpulver'
+      repo: 'todo.txt-graph'
+      version: '07e5bca88f70f14d8df5c1cda04203245ae72815'
+  - name: 'del'
+    github:
+      user: 'mgarrido'
+      repo: 'todo.txt-cli'
+      location: 'todo.actions.d/del'
+      version: 'e3b86300af00aede614c3b1f33c4a9cb6b208a01'
+      ignore_version: 'v2.10'
+      ignore_reason: 'use more recent commit'
+  - name: 'rm'
+    github:
+      user: 'mgarrido'
+      repo: 'todo.txt-cli'
+      location: 'todo.actions.d/rm'
+      version: 'e3b86300af00aede614c3b1f33c4a9cb6b208a01'
+      ignore_version: 'v2.10'
+      ignore_reason: 'use more recent commit'

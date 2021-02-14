@@ -1,0 +1,87 @@
+---
+- block:
+    - name: 'validate variables'
+      assert:
+        that:
+          - todotxt__repositories_manage is boolean
+          - todotxt__repositories_state in ['present', 'absent']
+          - todotxt__repositories_enabled is boolean
+          - todotxt__packages_manage is boolean
+          - todotxt__packages_state in ['present', 'absent']
+          - todotxt__packages is not string and
+            todotxt__packages is not mapping and
+            todotxt__packages is sequence
+          - todotxt__users is not string and
+            todotxt__users is not mapping and
+            todotxt__users is sequence
+          - todotxt__dir is string
+          - todotxt__default_action is string
+        quiet: true
+  rescue:
+    - name: 'output variable values'
+      debug:
+        msg: "{{ lookup('vars', item) }}"
+      loop:
+        - todotxt__users
+        - todotxt__dir
+        - todotxt__default_action
+    - name: 'fail -> variable validation errors'
+      fail:
+        msg: 'check variables in last 2 tasks'
+
+- name: 'get components github latest tag (run_once)'
+  shell: |
+    set -o pipefail
+    TAGS=$(curl https://api.github.com/repos/{{ item.github.user }}/\
+    {{ item.github.repo }}/tags 2>/dev/null)
+
+    if echo $TAGS | jq '.message' | grep -q 'API rate limit exceeded'; then
+      echo 'api_rate_limit_exceeded'
+    else
+      echo $TAGS\
+        | jq '.[] .name' -r\
+        | sort -rV\
+        | head -n1
+    fi
+  register: todotxt__github_latest_tag_r
+  changed_when: false
+  delegate_to: 'localhost'
+  run_once: true
+  loop_control:
+    label: '{{ item.github.user }}/{{ item.github.repo }}'
+  loop: '{{ todotxt__components }}'
+
+- name: 'compare components used version vs. latest tags'
+  debug:
+    msg: "{%- if item.stdout|length == 0 -%}
+No tags available (OK)
+{%- else -%}
+Versions
+{%-   if item.item.github.version != item.stdout %}
+differ
+{%-     if item.item.github.ignore_version is defined and
+           item.item.github.ignore_version == item.stdout -%}
+, but github.ignore_version == '{{ item.item.github.ignore_version }}'
+{%-       if item.item.github.ignore_reason is defined %}
+-> {{ item.item.github.ignore_reason }}
+{%-       endif %}
+(OK)
+{%-     else %}
+(WARN) -> test and use new version, then update github.version variable for
+{{ item.item.github.user }}/{{ item.item.github.repo }} or
+set github.ignore_version
+{%-     endif -%}
+{%-   else %}
+are the same (OK)
+{%-   endif -%}
+{%- endif -%}"
+  failed_when:
+    - item.item.github.version != item.stdout
+    - item.item.github.ignore_version|d('') != item.stdout
+  loop_control:
+    label: "{{ item.item.github.user }}/{{ item.item.github.repo }} -
+      {{ item.item.name }}:
+      used version '{{ item.item.github.version }}' vs.
+      latest tag '{{ item.stdout }}'"
+  loop: '{{ todotxt__github_latest_tag_r.results }}'
+  when: item.stdout != 'api_rate_limit_exceeded'

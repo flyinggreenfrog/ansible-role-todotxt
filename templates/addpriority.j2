@@ -1,0 +1,20 @@
+#!/bin/bash
+
+{{ ansible_managed | comment }}
+
+ACTION=$1
+shift
+
+[[ "$ACTION" == 'usage' ]] && {
+  echo '  Add and prioritize {{ item.1 | upper }}:'
+  curcmd=$(basename $0)
+  echo "    ${curcmd} mytask"
+  echo '      Add an item and prioritize it {{ item.1 | upper }} in one step'
+  echo ''
+  exit
+}
+
+if "$TODO_FULL_SH" command add "$@"; then
+  LINE=$(cat "$TODO_FILE" | wc -l)
+  "$TODO_FULL_SH" command pri "$LINE" {{ item.1 | upper }}
+fi
